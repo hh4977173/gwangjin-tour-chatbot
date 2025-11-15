@@ -1,207 +1,86 @@
 import { useState } from "react";
 
-//
-//  🔥 1) 다국어 UI 텍스트 테이블 (tipNote 제거)
-//
-const TEXT = {
-  ko: {
-    langName: "한국어",
-    welcomeTitle: "사용 언어를 선택해 주세요",
-    welcomeSub: "광진구 관광 도우미 챗봇이 사용할 언어를 설정합니다.",
-    btnKorean: "🇰🇷 한국어로 사용할래요",
-    btnEnglish: "🇺🇸 Use in English",
-    btnJapanese: "🇯🇵 日本語で使う",
-    btnChinese: "🇨🇳 中文（简体）",
-    headerTitle: "광진구 관광 도우미 챗봇",
-    headerSub: "건대·아차산·한강공원 코스, 맛집, 카페, 산책로까지 뭐든 물어보세요.",
-    exampleTitle: "이렇게 물어보면 좋아요",
-    example1: "건대입구역 기준 오후 반나절 코스 추천해줘",
-    example2: "아차산 초보자 등산 후 근처 저녁식사 코스 짜줘",
-    chatTitle: "대화",
-    chatSub: "(코스·맛집·대중교통 무엇이든 물어보세요)",
-    emptyChat:
-      "아직 대화가 없어요. 아래 입력창에 “광진구 야경 예쁜 코스 추천해줘”처럼 질문을 입력해보세요.",
-    inputPlaceholder: "예) 내일 오후에 친구랑 건대에서 3시간 코스 추천해줘",
-    sendBtn: "보내기",
-  },
-
-  en: {
-    langName: "English",
-    welcomeTitle: "Choose your language",
-    welcomeSub: "Select the language for the Gwangjin-gu Travel Guide Chatbot.",
-    btnKorean: "🇰🇷 Use in Korean",
-    btnEnglish: "🇺🇸 Use in English",
-    btnJapanese: "🇯🇵 Use in Japanese",
-    btnChinese: "🇨🇳 Use in Chinese",
-    headerTitle: "Gwangjin-gu Travel Guide Chatbot",
-    headerSub:
-      "Ask anything about courses, cafes, restaurants, parks, or transportation around Konkuk Univ & Achasan.",
-    exampleTitle: "Try asking like this",
-    example1: "Recommend a half-day course from Konkuk Univ. Station",
-    example2: "Beginner Achasan hiking + dinner course recommendation",
-    chatTitle: "Chat",
-    chatSub: "(Ask anything about courses, food, or transportation)",
-    emptyChat:
-      "No messages yet. Try asking “Recommend a nightview course in Gwangjin-gu”.",
-    inputPlaceholder:
-      "e.g. Recommend a 3-hour course around Konkuk Univ.",
-    sendBtn: "Send",
-  },
-
-  ja: {
-    langName: "日本語",
-    welcomeTitle: "使用する言語を選択してください",
-    welcomeSub: "広津区観光ガイドチャットボットの使用言語を設定します。",
-    btnKorean: "🇰🇷 韓国語で使う",
-    btnEnglish: "🇺🇸 英語で使う",
-    btnJapanese: "🇯🇵 日本語で使う",
-    btnChinese: "🇨🇳 中国語で使う",
-    headerTitle: "広津区 観光ガイド チャットボット",
-    headerSub:
-      "建大・峨嵯山・漢江公園のコースやグルメ・カフェなど、何でも聞いてください。",
-    exampleTitle: "こんな質問がおすすめです",
-    example1: "建大入口駅から半日コースをおすすめして",
-    example2: "峨嵯山初心者向け登山＋夕食コースを提案して",
-    chatTitle: "会話",
-    chatSub: "(コース・グルメ・交通など何でもどうぞ)",
-    emptyChat:
-      "まだメッセージがありません。「広津区で夜景がきれいなコースを教えて」など質問してみてください。",
-    inputPlaceholder: "例）建大入口で3時間コースをおすすめして",
-    sendBtn: "送信",
-  },
-
-  zh: {
-    langName: "中文",
-    welcomeTitle: "请选择使用语言",
-    welcomeSub: "设置广津区旅游向导聊天机器人的使用语言。",
-    btnKorean: "🇰🇷 使用韩语",
-    btnEnglish: "🇺🇸 使用英语",
-    btnJapanese: "🇯🇵 使用日语",
-    btnChinese: "🇨🇳 使用中文",
-    headerTitle: "广津区 旅游向导 聊天机器人",
-    headerSub:
-      "建大·峨嵯山·汉江公园路线、美食、咖啡厅、散步路线都可以问我。",
-    exampleTitle: "你可以这样提问",
-    example1: "推荐从建大入口站出发的半日行程",
-    example2: "峨嵯山新手爬山 + 晚餐路线推荐",
-    chatTitle: "聊天",
-    chatSub: "(路线、美食、交通都可以问哦)",
-    emptyChat:
-      "还没有开始聊天哦，可以问例如“推荐广津区夜景路线”。",
-    inputPlaceholder: "例如：推荐建大入口站附近的 3 小时行程",
-    sendBtn: "发送",
-  },
-};
-
-//
-//  🔥 버튼/공통 스타일 정의
-//
-const btnPrimaryStyle = {
-  padding: "10px 14px",
-  borderRadius: 999,
-  border: "none",
-  background:
-    "linear-gradient(135deg, rgba(30,129,87,0.95), rgba(43,181,192,0.9))",
-  color: "white",
-  fontSize: 14,
-  fontWeight: 600,
-  cursor: "pointer",
-};
-
-const btnSecondaryStyle = {
-  padding: "10px 14px",
-  borderRadius: 999,
-  border: "1px solid rgba(255,255,255,0.3)",
-  backgroundColor: "rgba(3,8,18,0.9)",
-  color: "white",
-  fontSize: 14,
-  cursor: "pointer",
-};
-
-const iconCircle = {
-  width: 40,
-  height: 40,
-  borderRadius: "999px",
-  backgroundColor: "rgba(0,0,0,0.15)",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  fontSize: 22,
-};
-
-const langChipStyle = {
-  fontSize: 11,
-  padding: "4px 10px",
-  borderRadius: 999,
-  backgroundColor: "rgba(0,0,0,0.18)",
-  border: "1px solid rgba(255,255,255,0.28)",
-};
-
-//
-//  🔥 메인 컴포넌트
-//
 export default function App() {
+  // ✅ 비밀번호 관련 상태
+  const [authed, setAuthed] = useState(false);
+  const [password, setPassword] = useState("");
+  const [pwError, setPwError] = useState("");
+
+  // ✅ 채팅 관련 상태
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const [language, setLanguage] = useState(null);
 
-  const primary = "#1e8157";
-  const primaryDark = "#0c4b34";
-
-  const t = language ? TEXT[language] : TEXT["ko"];
-
-  //
-  // 🔥 메시지 보내기
-  //
-  const send = async () => {
-    if (!input.trim()) return;
-
-    const userMsg = input;
-    setInput("");
-
-    const next = [...messages, { role: "user", content: userMsg }];
-    setMessages(next);
-
-    try {
-      const r = await fetch("http://localhost:8000/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: next,
-          language: language, // 언어 전달
-        }),
-      });
-
-      const data = await r.json();
-      setMessages([...next, { role: "assistant", content: data.content }]);
-    } catch (err) {
-      setMessages([
-        ...next,
-        {
-          role: "assistant",
-          content:
-            "서버에 연결할 수 없어요. 백엔드(8000번 포트)가 켜져 있는지 확인해 주세요.",
-        },
-      ]);
+  // 🔐 비밀번호 확인 함수
+  const handleLogin = (e) => {
+    e.preventDefault();
+    if (password === "HTM") {
+      setAuthed(true);
+      setPwError("");
+    } else {
+      setPwError("비밀번호가 올바르지 않아요. 다시 확인해 주세요.");
     }
   };
 
-  //
-  // 🔥 1단계: 언어 선택 화면
-  //
-  if (!language) {
+  // 📨 메시지 전송 함수
+const send = async () => {
+  if (!input.trim()) return;
+
+  // 1) 지금 입력값 따로 저장
+  const userInput = input;
+
+  // 2) 보내자마자 입력창 비우기
+  setInput("");
+
+  // 3) 채팅 로그에 사용자 메시지 추가
+  const next = [...messages, { role: "user", content: userInput }];
+  setMessages(next);
+
+  try {
+    const r = await fetch("http://localhost:8000/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        // 비밀 토큰 쓰면 여기 헤더 추가
+        // "X-ACCESS-TOKEN": "gwangjin-secret-2025",
+      },
+      body: JSON.stringify({ messages: next }),
+    });
+    const data = await r.json();
+
+    // 4) 모델 응답 추가
+    setMessages([...next, { role: "assistant", content: data.content }]);
+  } catch (err) {
+    setMessages([
+      ...next,
+      {
+        role: "assistant",
+        content:
+          "서버에 연결할 수 없어요. 백엔드(8000번 포트)가 켜져 있는지 확인해 주세요.",
+      },
+    ]);
+  }
+};
+
+
+  const primary = "#1e8157"; // 광진구/한강 느낌 초록
+  const primaryDark = "#0c4b34";
+
+  // 🔐 아직 비밀번호 통과 전이면, 로그인 페이지를 먼저 보여줌
+  if (!authed) {
     return (
       <div
         style={{
           minHeight: "100vh",
+          margin: 0,
           padding: "24px 12px",
           background:
             "radial-gradient(circle at top left, #2bb5c0 0, #05060a 55%, #020309 100%)",
+          color: "#f5f5f5",
+          fontFamily:
+            '"Pretendard", "Noto Sans KR", -apple-system, system-ui, sans-serif',
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          color: "white",
-          fontFamily: '"Pretendard", "Noto Sans KR", sans-serif',
         }}
       >
         <div
@@ -210,48 +89,125 @@ export default function App() {
             maxWidth: 420,
             backgroundColor: "rgba(7,10,18,0.95)",
             borderRadius: 20,
-            border: "1px solid rgba(255,255,255,0.1)",
-            padding: "24px 20px",
+            border: "1px solid rgba(255,255,255,0.08)",
+            boxShadow: "0 24px 60px rgba(0,0,0,0.7)",
+            padding: "24px 22px 20px",
           }}
         >
-          <h2>{t.welcomeTitle}</h2>
-          <p style={{ opacity: 0.85, marginBottom: 20 }}>{t.welcomeSub}</p>
+          <h1
+            style={{
+              fontSize: 20,
+              fontWeight: 700,
+              margin: "0 0 4px",
+            }}
+          >
+            광진구 관광 도우미 챗봇 입장
+          </h1>
+          <p
+            style={{
+              fontSize: 13,
+              opacity: 0.8,
+              margin: "0 0 18px",
+              lineHeight: 1.5,
+            }}
+          >
+            이 서비스는 초대받은 사용자만 이용할 수 있어요.
+            <br />
+            입장 비밀번호를 입력하면 챗봇 화면으로 이동합니다.
+          </p>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            <button onClick={() => setLanguage("ko")} style={btnPrimaryStyle}>
-              {t.btnKorean}
-            </button>
+          <form onSubmit={handleLogin}>
+            <label
+              htmlFor="pw"
+              style={{
+                display: "block",
+                fontSize: 13,
+                marginBottom: 6,
+              }}
+            >
+              입장 비밀번호
+            </label>
+            <input
+              id="pw"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder=""
+              style={{
+                width: "100%",
+                padding: "9px 11px",
+                borderRadius: 10,
+                border: "1px solid rgba(255,255,255,0.22)",
+                backgroundColor: "rgba(5,12,24,0.96)",
+                color: "#f5f5f5",
+                fontSize: 13,
+                outline: "none",
+                marginBottom: 8,
+              }}
+            />
+            {pwError && (
+              <div
+                style={{
+                  fontSize: 12,
+                  color: "#ff8a80",
+                  marginBottom: 10,
+                }}
+              >
+                {pwError}
+              </div>
+            )}
 
-            <button onClick={() => setLanguage("en")} style={btnSecondaryStyle}>
-              {t.btnEnglish}
+            <button
+              type="submit"
+              style={{
+                width: "100%",
+                padding: "9px 0",
+                borderRadius: 999,
+                border: "none",
+                background: `linear-gradient(135deg, ${primary}, ${primaryDark})`,
+                color: "white",
+                fontSize: 14,
+                fontWeight: 600,
+                cursor: "pointer",
+                boxShadow: "0 10px 24px rgba(0,0,0,0.6)",
+                marginTop: 4,
+              }}
+            >
+              입장하기
             </button>
+          </form>
 
-            <button onClick={() => setLanguage("ja")} style={btnSecondaryStyle}>
-              {t.btnJapanese}
-            </button>
-
-            <button onClick={() => setLanguage("zh")} style={btnSecondaryStyle}>
-              {t.btnChinese}
-            </button>
+          <div
+            style={{
+              fontSize: 11,
+              opacity: 0.65,
+              marginTop: 14,
+              lineHeight: 1.5,
+            }}
+          >
+            ※ 다른 사람과 URL이 공유되더라도 비밀번호를 모르면 사용할 수
+            없습니다.
           </div>
         </div>
       </div>
     );
   }
 
-  //
-  // 🔥 2단계: 본 챗봇 화면
-  //
+  // 🔽 여기부터는 "비밀번호 통과 후" 기존 챗봇 UI
   return (
     <div
       style={{
         minHeight: "100vh",
+        margin: 0,
         padding: "24px 12px",
         background:
           "radial-gradient(circle at top left, #2bb5c0 0, #05060a 55%, #020309 100%)",
-        fontFamily: '"Pretendard", "Noto Sans KR", sans-serif',
+        color: "#f5f5f5",
+        fontFamily:
+          '"Pretendard", "Noto Sans KR", -apple-system, system-ui, sans-serif',
         display: "flex",
         justifyContent: "center",
+        alignItems: "flex-start",
       }}
     >
       <div
@@ -261,10 +217,11 @@ export default function App() {
           backgroundColor: "rgba(7,10,18,0.92)",
           borderRadius: 20,
           border: "1px solid rgba(255,255,255,0.06)",
+          boxShadow: "0 24px 60px rgba(0,0,0,0.6)",
           overflow: "hidden",
         }}
       >
-        {/* 헤더 */}
+        {/* 상단 헤더 */}
         <header
           style={{
             padding: "16px 20px",
@@ -276,21 +233,56 @@ export default function App() {
               "linear-gradient(120deg, rgba(30,129,87,0.96), rgba(43,181,192,0.9))",
           }}
         >
-          <div style={iconCircle}>🏞️</div>
-
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 18, fontWeight: 700 }}>
-              {t.headerTitle}
-            </div>
-            <div style={{ fontSize: 12, opacity: 0.9 }}>{t.headerSub}</div>
+          <div
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: "999px",
+              backgroundColor: "rgba(0,0,0,0.15)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 22,
+            }}
+          >
+            🏞️
           </div>
-
-          <span style={langChipStyle}>Language: {t.langName}</span>
+          <div style={{ flex: 1 }}>
+            <div
+              style={{
+                fontSize: 18,
+                fontWeight: 700,
+                letterSpacing: "0.03em",
+              }}
+            >
+              광진구 관광 도우미 챗봇
+            </div>
+            <div
+              style={{
+                fontSize: 12,
+                opacity: 0.9,
+                marginTop: 2,
+              }}
+            >
+              건대·아차산·한강공원 코스, 맛집, 카페, 산책로까지 뭐든 물어보세요.
+            </div>
+          </div>
+          <span
+            style={{
+              fontSize: 11,
+              padding: "4px 10px",
+              borderRadius: 999,
+              backgroundColor: "rgba(0,0,0,0.18)",
+              border: "1px solid rgba(255,255,255,0.28)",
+            }}
+          >
+            Gwangjin-gu Guide
+          </span>
         </header>
 
-        {/* 본문 */}
+        {/* 메인 내용 */}
         <main style={{ padding: "18px 20px 20px" }}>
-          {/* 안내 */}
+          {/* 안내 문구 */}
           <section
             style={{
               marginBottom: 16,
@@ -306,14 +298,23 @@ export default function App() {
           >
             <div style={{ fontSize: 18 }}>🧭</div>
             <div>
-              <div style={{ fontWeight: 600 }}>{t.exampleTitle}</div>
+              <div style={{ fontWeight: 600, marginBottom: 4 }}>
+                이렇게 물어보면 좋아요
+              </div>
               <div style={{ opacity: 0.9 }}>
-                • {t.example1} <br />• {t.example2}
+                예){" "}
+                <span style={{ color: "#b9f6ca" }}>
+                  “건대입구역 기준 오후 반나절 코스 추천해줘”
+                </span>
+                ,{" "}
+                <span style={{ color: "#b2ebf2" }}>
+                  “아차산 초보자 등산 후 근처 저녁식사 코스 짜줘”
+                </span>
               </div>
             </div>
           </section>
 
-          {/* 대화 창 */}
+          {/* 채팅 카드 */}
           <section
             style={{
               borderRadius: 16,
@@ -331,15 +332,9 @@ export default function App() {
                 color: "#e0f2f1",
               }}
             >
-              {t.chatTitle}
-              <span
-                style={{
-                  fontSize: 11,
-                  marginLeft: 8,
-                  opacity: 0.75,
-                }}
-              >
-                {t.chatSub}
+              대화
+              <span style={{ fontSize: 11, marginLeft: 8, opacity: 0.75 }}>
+                (코스·맛집·대중교통 무엇이든 물어보세요)
               </span>
             </h4>
 
@@ -357,8 +352,15 @@ export default function App() {
               }}
             >
               {messages.length === 0 && (
-                <div style={{ fontSize: 13, opacity: 0.7 }}>
-                  {t.emptyChat}
+                <div
+                  style={{
+                    fontSize: 13,
+                    opacity: 0.7,
+                  }}
+                >
+                  아직 대화가 없어요. 아래 입력창에{" "}
+                  <b>“광진구 야경 예쁜 코스 추천해줘”</b>처럼 질문을
+                  입력해보세요.
                 </div>
               )}
 
@@ -384,12 +386,12 @@ export default function App() {
                         justifyContent: "center",
                         fontSize: 14,
                         marginRight: 6,
+                        flexShrink: 0,
                       }}
                     >
                       🌉
                     </div>
                   )}
-
                   <div
                     style={{
                       maxWidth: "78%",
@@ -399,11 +401,10 @@ export default function App() {
                           ? "12px 12px 3px 12px"
                           : "12px 12px 12px 3px",
                       backgroundColor:
-                        m.role === "user"
-                          ? primary
-                          : "rgba(20,32,48,0.95)",
+                        m.role === "user" ? primary : "rgba(20,32,48,0.95)",
                       color: "#f5f5f5",
                       fontSize: 13,
+                      lineHeight: 1.45,
                     }}
                   >
                     {m.content}
@@ -412,8 +413,15 @@ export default function App() {
               ))}
             </div>
 
-            {/* 입력창 */}
-            <div style={{ display: "flex", gap: 8 }}>
+            {/* 입력 줄 */}
+            <div
+              style={{
+                display: "flex",
+                gap: 8,
+                alignItems: "center",
+                marginTop: 4,
+              }}
+            >
               <input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
@@ -423,7 +431,7 @@ export default function App() {
                     send();
                   }
                 }}
-                placeholder={t.inputPlaceholder}
+                placeholder="예) 내일 오후에 친구랑 건대에서 3시간 코스 추천해줘"
                 style={{
                   flex: 1,
                   padding: "8px 10px",
@@ -432,24 +440,25 @@ export default function App() {
                   backgroundColor: "rgba(5,12,24,0.95)",
                   color: "#f5f5f5",
                   fontSize: 13,
+                  outline: "none",
                 }}
               />
-
               <button
                 onClick={send}
                 style={{
                   padding: "8px 16px",
                   borderRadius: 999,
                   border: "none",
-                  background:
-                    "linear-gradient(135deg, #1e8157, #0c4b34)",
+                  background: `linear-gradient(135deg, ${primary}, ${primaryDark})`,
                   color: "white",
                   fontSize: 13,
                   fontWeight: 600,
                   cursor: "pointer",
+                  boxShadow: "0 8px 20px rgba(0,0,0,0.45)",
+                  whiteSpace: "nowrap",
                 }}
               >
-                {t.sendBtn}
+                보내기
               </button>
             </div>
           </section>
